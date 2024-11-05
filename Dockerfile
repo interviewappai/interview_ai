@@ -9,7 +9,8 @@ RUN pnpm run build
 # Stage 2: Setup Django environment
 FROM python:3.10 as backend
 WORKDIR /app
-
+# install pyaudio
+RUN apt-get update && apt-get install -y portaudio19-dev
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt

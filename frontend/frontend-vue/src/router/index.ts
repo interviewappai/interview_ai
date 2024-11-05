@@ -4,7 +4,7 @@ import Home from '../pages/Index.vue'
 import Login from '../pages/Login.vue'
 import Signup from '../pages/Signup.vue'
 import Interview from '../pages/Interview.vue'
-import ProfilePage from '../pages/Profile.vue'
+import Profile from '@/pages/Profile.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,7 +34,7 @@ const router = createRouter({
     {
       path: '/profile',
       name: 'Profile',
-      component: ProfilePage,
+      component: Profile,
       meta: { requiresAuth: true }
     }
   ]
