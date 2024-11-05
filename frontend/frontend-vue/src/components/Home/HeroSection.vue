@@ -51,7 +51,7 @@
 /* This is just to transition when you change the viewport size. */
 .gradient {
 	--size: 750px;
-	--speed: 10s;
+	--speed: 20s;
 	--easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
 	width: var(--size);
 	height: var(--size);

@@ -1,11 +1,12 @@
 import { defineStore } from "pinia";
 import axios from "axios";
+import type { Profile } from "@/types/Profile";
 
 export const useProfileStore = defineStore("profile", {
   state: () => ({
-    userProfile: null,
+    userProfile: null as Profile | null,
     loading: false,
-    error: null,
+    error: null as Error | null,
   }),
   actions: {
     async fetchUserProfile() {
@@ -14,13 +15,13 @@ export const useProfileStore = defineStore("profile", {
       try {
         const response = await axios.get("/api/profile/"); // Adjust the API endpoint as needed
         this.userProfile = response.data;
-      } catch (err) {
+      } catch (err:any) {
         this.error = err;
       } finally {
         this.loading = false;
       }
     },
-    async updateUserProfile(profileData, resumePdf, isEditing) {
+    async updateUserProfile(profileData:any, resumePdf:File, isEditing:Boolean) {
       this.loading = true;
       this.error = null;
       const formData = new FormData();
@@ -41,7 +42,7 @@ export const useProfileStore = defineStore("profile", {
           },
         });
         this.userProfile = response.data; // Update the local state
-      } catch (err) {
+      } catch (err:any) {
         this.error = err;
       } finally {
         this.loading = false;

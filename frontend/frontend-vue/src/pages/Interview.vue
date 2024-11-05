@@ -89,10 +89,10 @@ let audioChunks: Blob[] = []; // Store audio chunks
 const audioBlobUrl = ref<string | null>(null); // URL for the audio blob
 const scoreCardVisible = ref(false); // Track if the scorecard is visible
 const score = ref(0); // Score percentage
-const audio = ref(null); // Add this ref
+const audio = ref(null as HTMLAudioElement | null); // Add this ref
 
 // Add base64 to audio conversion function
-const playAudioFromBase64 = (base64Audio) => {
+const playAudioFromBase64 = (base64Audio: string) => {
   try {
     // Decode base64
     const audioBytes = atob(base64Audio);
@@ -131,7 +131,7 @@ onMounted(async () => {
 const startInterview = async () => {
   try {
     const response = await interviewStore.startInterview({
-      resume_details: profileStore.userProfile,
+      resume_data: profileStore.userProfile,
       job_description: jobDescription.value,
     });
     if (response) {

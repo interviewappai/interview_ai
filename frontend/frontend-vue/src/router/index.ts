@@ -4,7 +4,6 @@ import Home from '../pages/Index.vue'
 import Login from '../pages/Login.vue'
 import Signup from '../pages/Signup.vue'
 import Interview from '../pages/Interview.vue'
-
 import ProfilePage from '../pages/Profile.vue'
 
 const router = createRouter({
@@ -41,7 +40,7 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, from, next: any) => {
   const authStore = useAuthStore()
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
 

@@ -3,7 +3,7 @@ import { RouterLink, RouterView, useRoute } from 'vue-router'
 import { onMounted, computed, ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { Button } from '@/components/ui/button'
-
+import { useColorMode } from '@vueuse/core'
 import { Menu, X } from 'lucide-vue-next'
 
 const authStore = useAuthStore()
@@ -28,6 +28,8 @@ const navItems = [
 ]
 
 const isActive = (path: string) => route.path === path
+let mode = useColorMode()
+mode.value='dark'
 </script>
 
 <template>

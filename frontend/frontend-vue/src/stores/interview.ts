@@ -8,7 +8,7 @@ export const useInterviewStore = defineStore("interview", {
     interviews: [],
   }),
   actions: {
-    async startInterview(data: { profile: any; jobDescription: string }) {
+    async startInterview(data: { resume_data: any; job_description: string }) {
       this.loading = true;
       this.error = null;
       try {
