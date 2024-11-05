@@ -8,7 +8,7 @@ def convert_text_to_speech(text):
     client = ElevenLabs(api_key=api_key)
 
     audio = client.text_to_speech.convert(
-        voice_id="mCQMfsqGDT6IDkEKR20a",
+        voice_id="CwhRBWXzGAHq8TQ4Fs17",
         optimize_streaming_latency="0",
         output_format="mp3_22050_32",
         text=text,

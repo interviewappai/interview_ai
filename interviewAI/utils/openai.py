@@ -7,7 +7,6 @@ openai.api_key = api_key
 
 def get_completion(history, user_input=None):
     conversation_history = history
-    print(conversation_history)
     if user_input:
         conversation_history.append({"role": "user", "content": user_input})
     response = openai.chat.completions.create(

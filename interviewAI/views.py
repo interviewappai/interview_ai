@@ -2,6 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .utils.openai import get_completion
+from .utils.elevenlabs import convert_text_to_speech
+from base64 import b64encode
 # Create your views here.
 
 
@@ -47,7 +49,21 @@ class InterviewStartView(APIView):
         # Call OpenAI API
         response = "We have analyzed your job description and resume and interviewer is ready to start the interview."
         response = response + " " + get_completion(conversation_history)
-        return Response({"response": response}, status=status.HTTP_200_OK)
+        # convert response to text and then to audio
+        audio_response = convert_text_to_speech(str(response))
+
+        # Convert generator to bytes if needed
+        if hasattr(audio_response, '__iter__') and not isinstance(audio_response, bytes):
+            audio_bytes = b''.join(audio_response)
+        else:
+            audio_bytes = audio_response
+
+        # Encode audio bytes to base64 string
+        audio_base64 = b64encode(audio_bytes).decode('utf-8')
+        
+        return Response({
+            "response": audio_base64
+        }, status=status.HTTP_200_OK)
 
 
 class SubmitAnswer(APIView):
