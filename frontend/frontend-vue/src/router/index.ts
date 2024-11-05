@@ -4,7 +4,7 @@ import Home from '../pages/Index.vue'
 import Login from '../pages/Login.vue'
 import Signup from '../pages/Signup.vue'
 import Interview from '../pages/Interview.vue'
-import About from '../pages/About.vue'
+
 import ProfilePage from '../pages/Profile.vue'
 
 const router = createRouter({
@@ -31,11 +31,7 @@ const router = createRouter({
       component: Interview,
       meta: { requiresAuth: true }
     },
-    {
-      path: '/about',
-      name: 'about',
-      component: About
-    },
+
     {
       path: '/profile',
       name: 'Profile',

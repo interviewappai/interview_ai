@@ -1,7 +1,7 @@
-import { defineStore } from 'pinia';
-import axios from 'axios';
+import { defineStore } from "pinia";
+import axios from "axios";
 
-export const useProfileStore = defineStore('profile', {
+export const useProfileStore = defineStore("profile", {
   state: () => ({
     userProfile: null,
     loading: false,
@@ -12,7 +12,7 @@ export const useProfileStore = defineStore('profile', {
       this.loading = true;
       this.error = null;
       try {
-        const response = await axios.get('/api/profile/'); // Adjust the API endpoint as needed
+        const response = await axios.get("/api/profile/"); // Adjust the API endpoint as needed
         this.userProfile = response.data;
       } catch (err) {
         this.error = err;
@@ -21,7 +21,6 @@ export const useProfileStore = defineStore('profile', {
       }
     },
     async updateUserProfile(profileData, resumePdf, isEditing) {
-    
       this.loading = true;
       this.error = null;
       const formData = new FormData();
@@ -29,16 +28,16 @@ export const useProfileStore = defineStore('profile', {
         formData.append(key, profileData[key]);
       }
       if (resumePdf) {
-        formData.append('resume_pdf', resumePdf);
+        formData.append("resume_pdf", resumePdf);
       }
 
       try {
         // Adjusted the logic to use isEditing for the request method
-        const url = '/api/profile/' + (isEditing ? 'update/' : 'create/'); // Adjust the API endpoint as needed
-        const method = isEditing ? 'patch' : 'post'; // Use 'patch' if isEditing is true
+        const url = "/api/profile/" + (isEditing ? "update/" : "create/"); // Adjust the API endpoint as needed
+        const method = isEditing ? "patch" : "post"; // Use 'patch' if isEditing is true
         const response = await axios[method](url, formData, {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
         });
         this.userProfile = response.data; // Update the local state

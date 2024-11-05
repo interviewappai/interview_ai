@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col items-center justify-center min-h-screen">
-    <Card v-if="!interviewStarted" class="w-full max-w-md p-6 shadow-lg">
+    <Card v-if="!interviewStarted || !interviewEnded" class="w-full max-w-md p-6 shadow-lg">
       <CardHeader>
         <CardTitle>Welcome to Your Interview</CardTitle>
         <CardDescription>Here are your profile details:</CardDescription>
@@ -9,7 +9,8 @@
         <div class="flex flex-col space-y-2">
           <p><strong>Name:</strong> {{ profileStore.userProfile?.name || 'N/A' }}</p>
           <p><strong>Age:</strong> {{ profileStore.userProfile?.age || 'N/A' }}</p>
-          <p class="h-40 overflow-y-auto"><strong>Resume:</strong> {{ profileStore.userProfile?.resume_data || 'N/A' }}</p>
+          <p class="h-40 overflow-y-auto"><strong>Resume:</strong> {{ profileStore.userProfile?.resume_data || 'N/A' }}
+          </p>
           <div>
             <Label for="jobDescription">Job Description</Label>
             <Textarea id="jobDescription" v-model="jobDescription" rows="3" placeholder="Enter job description" />
@@ -24,7 +25,7 @@
       </CardFooter>
     </Card>
 
-    <div v-if="interviewStarted" class="flex flex-col items-center">
+    <div v-if="interviewStarted " class="flex flex-col items-center">
       <div class="voice-indicator rounded-full bg-green-500 h-16 w-16 flex items-center justify-center">
         <span class="text-white">🎤</span> <!-- Placeholder for voice indicator -->
       </div>
@@ -82,11 +83,43 @@ const showDialog = ref(false);
 const jobDescription = ref(''); // Reactive variable for job description
 const interviewStarted = ref(false); // Track if the interview has started
 const isRecording = ref(false); // Track if recording is in progress
+const interviewEnded = ref(false); // Track if the interview has ended
 let mediaRecorder: MediaRecorder | null = null; // MediaRecorder instance
 let audioChunks: Blob[] = []; // Store audio chunks
 const audioBlobUrl = ref<string | null>(null); // URL for the audio blob
 const scoreCardVisible = ref(false); // Track if the scorecard is visible
 const score = ref(0); // Score percentage
+const audio = ref(null); // Add this ref
+
+// Add base64 to audio conversion function
+const playAudioFromBase64 = (base64Audio) => {
+  try {
+    // Decode base64
+    const audioBytes = atob(base64Audio);
+    
+    // Convert to Uint8Array
+    const arrayBuffer = new Uint8Array(audioBytes.length);
+    for (let i = 0; i < audioBytes.length; i++) {
+      arrayBuffer[i] = audioBytes.charCodeAt(i);
+    }
+    
+    // Create blob and URL
+    const blob = new Blob([arrayBuffer], { type: 'audio/mp3' });
+    const audioUrl = URL.createObjectURL(blob);
+    
+    // Create and play audio
+    if (audio.value) {
+      URL.revokeObjectURL(audio.value.src); // Clean up old URL
+    }
+    audio.value = new Audio(audioUrl);
+    audio.value.play();
+    
+    // Clean up URL when done
+    audio.value.onended = () => URL.revokeObjectURL(audioUrl);
+  } catch (error) {
+    console.error("Error playing audio:", error);
+  }
+};
 
 onMounted(async () => {
   await profileStore.fetchUserProfile(); // Fetch the user profile when the component mounts
@@ -98,15 +131,23 @@ onMounted(async () => {
 const startInterview = async () => {
   try {
     const response = await interviewStore.startInterview({
-      profile: profileStore.userProfile,
-      jobDescription: jobDescription.value,
+      resume_details: profileStore.userProfile,
+      job_description: jobDescription.value,
     });
-    console.log("Interview started:", response);
-    interviewStarted.value = true; // Set interviewStarted to true
+    if (response) {
+      console.log("Interview started:", response);
+      interviewStarted.value = true; // Set interviewStarted to true
+      // Play the audio response
+      if (response.response) {
+        playAudioFromBase64(response.response);
+      }
+    } else {
+      console.log("Interview not started:", response);
+    }
   } catch (error) {
     console.error("Error starting interview:", error);
   }
-};
+}
 
 const toggleRecording = async () => {
   if (isRecording.value) {
@@ -137,9 +178,11 @@ const endInterview = () => {
   // Logic to end the interview
   console.log("Ending interview...");
   interviewStarted.value = false; // Reset the interview state
+  interviewEnded.value = true; // Set interviewEnded to true
   scoreCardVisible.value = true; // Show the scorecard
   audioBlobUrl.value = null; // Reset the audio blob URL
 };
+
 </script>
 
 <style scoped>
@@ -151,9 +194,11 @@ const endInterview = () => {
   0% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.1);
   }
+
   100% {
     transform: scale(1);
   }

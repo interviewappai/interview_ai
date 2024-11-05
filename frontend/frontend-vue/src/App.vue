@@ -24,17 +24,18 @@ const handleLogout = () => {
 const navItems = [
   { name: 'Home', path: '/' },
   { name: 'Interview', path: '/interview' },
-  { name: 'About', path: '/about' },
+
 ]
 
 const isActive = (path: string) => route.path === path
 </script>
 
 <template>
-  <div class="min-h-screen bg-background">
-    <header class="border-b sticky top-0 z-50 bg-gray-50">
-      <div class="container mx-auto px-4">
-        <nav class="flex items-center justify-between h-16">
+  <div class="min-h-screen">
+   
+    <header class="border-b border-black sticky top-0 z-50 bg-dark h-16 px-4">
+      <div class="">
+        <nav class="flex items-center justify-between">
           <RouterLink to="/" class="text-xl font-bold">Zreo</RouterLink>
 
           <!-- Desktop Navigation -->
@@ -75,7 +76,7 @@ const isActive = (path: string) => route.path === path
 
       <!-- Mobile Menu -->
       <div v-if="isMobileMenuOpen" class="md:hidden">
-        <div class="container mx-auto px-4 py-4 space-y-2">
+        <div class="px-4 py-10 space-y-2 bg-dark">
           <RouterLink
             v-for="item in navItems"
             :key="item.path"
@@ -104,7 +105,7 @@ const isActive = (path: string) => route.path === path
       </div>
     </header>
 
-    <main class="px-4">
+    <main class="">
       <RouterView />
     </main>
   </div>
@@ -132,4 +133,8 @@ nav a {
 nav a:first-of-type {
   border: 0;
 }
+
+
+
+
 </style>

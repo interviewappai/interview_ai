@@ -18,7 +18,16 @@ module.exports = {
         "2xl": "1400px",
       },
     },
-    extend: {
+    extend: {      colors: {
+      primary: {
+        DEFAULT: '#646cff',
+        dark: '#535bf2',
+      },
+      dark: {
+        DEFAULT: '#1a1a1a',
+        lighter: '#242424',
+      }
+    },
       keyframes: {
         "accordion-down": {
           from: { height: 0 },
