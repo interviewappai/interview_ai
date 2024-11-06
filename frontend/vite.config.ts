@@ -31,7 +31,7 @@ export default defineConfig(({ mode }) => {
       host: !isDev,  // only needed in docker
       proxy: {
         '/api': {
-          target: isDev ? 'http://localhost:8000' : 'http://backend:8000',
+          target: isDev ? 'http://127.0.0.1:8000/api' : 'http://backend:8000',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, '')
         },

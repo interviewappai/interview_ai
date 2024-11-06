@@ -1,6 +1,7 @@
 # Node modules
 node_modules/
 
+staticfiles/
 # Logs
 logs/
 *.log
@@ -49,3 +50,5 @@ env/
 
 # Other
 *.local
+
+.env*

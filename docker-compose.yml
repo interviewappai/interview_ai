@@ -2,7 +2,7 @@ services:
   backend:
     build: ./backend
     env_file:
-      - ./backend/.env
+      - ./backend/.env.prod
     volumes:
       - ./backend:/app
       - sqlite_data:/app/data  # for persistent sqlite database

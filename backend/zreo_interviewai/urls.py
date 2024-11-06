@@ -25,5 +25,5 @@ urlpatterns = [
     path('api/auth/', include('userAuth.urls')),
     path('api/interview/', include('interviewAI.urls')),
     path('api/profile/', include('userprofile.urls')),
-     re_path(r'^.*$', TemplateView.as_view(template_name='index.html'), name='vue-app')
+    re_path(r'^.*$', TemplateView.as_view(template_name='index.html'), name='vue-app')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -4,11 +4,12 @@ from rest_framework import status
 from .utils.openai import get_completion
 from .utils.elevenlabs import convert_text_to_speech
 from base64 import b64encode
+from rest_framework.permissions import IsAuthenticated
 # Create your views here.
 
 
 class InterviewStartView(APIView):
-    permission_classes = []
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         job_description = request.data.get("job_description", None)
@@ -69,5 +70,4 @@ class InterviewStartView(APIView):
 class SubmitAnswer(APIView):
 
     def post(self, request):
-
         pass
