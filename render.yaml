@@ -1,0 +1,46 @@
+services:
+  - name: frontend
+    type: web
+    env: docker
+    dockerfilePath: docker/frontend.Dockerfile
+    buildCommand: "npm install"  # Example, adjust as necessary
+    startCommand: "npm start"    # Example, adjust as necessary
+    envVars:
+      - key: NODE_ENV
+        value: development
+    ports:
+      - 3000
+    mounts:
+      - type: volume
+        name: frontend-vol
+        path: /app
+      - type: volume
+        name: node_modules-vol
+        path: /app/node_modules
+
+  - name: backend
+    type: web
+    env: docker
+    dockerfilePath: docker/backend.Dockerfile
+    buildCommand: "pip install -r requirements.txt"  # Example, adjust as necessary
+    startCommand: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: zreo_interviewai.settings
+    ports:
+      - 8000
+    mounts:
+      - type: volume
+        name: backend-vol
+        path: /app
+      - type: volume
+        name: sqlite_data
+        path: /app/db
+
+volumes:
+  - name: frontend-vol
+  - name: node_modules-vol
+  - name: backend-vol
+  - name: sqlite_data
