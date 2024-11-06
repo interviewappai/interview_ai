@@ -1,35 +1,32 @@
-version: '3.8'
-
 services:
-  frontend:
-    build:
-      context: .
-      dockerfile: docker/frontend.Dockerfile
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=development
-    depends_on:
-      - backend
-
   backend:
-    build:
-      context: .
-      dockerfile: docker/backend.Dockerfile
+    build: ./backend
     volumes:
       - ./backend:/app
-      - sqlite_data:/app/db  # Persist SQLite database
-    ports:
-      - "8000:8000"
+      - sqlite_data:/app/data  # for persistent sqlite database
+      - media_files:/app/media  # Add this line
+      - frontend_build:/app/dist 
     environment:
-      - DJANGO_SETTINGS_MODULE=zreo_interviewai.settings
-      # Remove PostgreSQL related environment variables
-    command: >
-      sh -c "python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8000"
+      - DEBUG=0
+      - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
+
+  frontend:
+    build: ./frontend
+    volumes:
+      - build_files:/app/dist
+
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+    volumes:
+      - build_files:/usr/share/nginx/html
+    depends_on:
+      - backend
+      - frontend
 
 volumes:
-  sqlite_data:  # For persisting the SQLite database file
+  build_files:
+  sqlite_data:  # volume for sqlite database
+  media_files: 
+  frontend_build:

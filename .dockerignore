@@ -1,0 +1,36 @@
+# Ignore node_modules (frontend)
+frontend/node_modules/
+
+# Ignore Django migrations and SQLite database files
+backend/**/migrations/
+backend/db.sqlite3
+backend/sqlite_data/
+
+# Ignore Python bytecode files
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+
+# Ignore virtual environment directories
+backend/env/
+frontend/node_modules/
+
+# Ignore frontend build output if you want to use Docker to build it, but don't want it pre-built
+frontend/dist/
+
+# Ignore temporary and log files
+*.log
+*.tmp
+*.swp
+
+# Ignore configuration files that shouldn't be copied
+/env
+*.env
+.dockerignore
+Dockerfile
+
+# Ignore build artifacts and other unnecessary files
+*.md
+*.git
+*.gitignore
+.DS_Store
