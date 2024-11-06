@@ -3,8 +3,6 @@ services:
     type: web
     env: docker
     dockerfilePath: docker/frontend.Dockerfile
-    buildCommand: "npm install"  # Adjust this if needed
-    startCommand: "npm start"    # Adjust based on the actual start script
     envVars:
       - key: NODE_ENV
         value: development
@@ -17,10 +15,6 @@ services:
     type: web
     env: docker
     dockerfilePath: docker/backend.Dockerfile
-    buildCommand: "pip install -r requirements.txt"  # Modify as needed
-    startCommand: >
-      sh -c "python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8000"
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: zreo_interviewai.settings
