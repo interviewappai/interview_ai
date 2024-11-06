@@ -11,8 +11,7 @@ const pinia = createPinia()
 app.use(pinia)
 app.use(router)
 
-// Set up axios
-axios.defaults.baseURL = 'http://localhost:8000' // Update this to match your Django backend URL
+
 
 // Add a request interceptor
 axios.interceptors.request.use(

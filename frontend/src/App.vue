@@ -5,7 +5,7 @@ import { useAuthStore } from '@/stores/auth'
 import { Button } from '@/components/ui/button'
 import { useColorMode } from '@vueuse/core'
 import { Menu, X } from 'lucide-vue-next'
-
+import { useRouter } from 'vue-router'
 const authStore = useAuthStore()
 const route = useRoute()
 
@@ -15,16 +15,17 @@ const isMobileMenuOpen = ref(false)
 onMounted(async () => {
   await authStore.checkAuth()
 })
-
+const router = useRouter()
 const handleLogout = () => {
   authStore.logout()
   isMobileMenuOpen.value = false
+  router.push('/login')
 }
 
 const navItems = [
   { name: 'Home', path: '/' },
   { name: 'Interview', path: '/interview' },
-
+  { name: 'Profile', path: '/profile' },
 ]
 
 const isActive = (path: string) => route.path === path
