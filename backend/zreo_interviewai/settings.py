@@ -65,7 +65,7 @@ MIDDLEWARE = [
 ]
 # cors settings
 CORS_ALLOW_ALL_ORIGINS = True
-
+ALLOWED_HOSTS = ['*']
 
 # Configure REST framework to use JWT authentication
 REST_FRAMEWORK = {

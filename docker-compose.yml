@@ -1,6 +1,8 @@
 services:
   backend:
     build: ./backend
+    env_file:
+      - ./backend/.env
     volumes:
       - ./backend:/app
       - sqlite_data:/app/data  # for persistent sqlite database
@@ -8,7 +10,7 @@ services:
       - frontend_build:/app/dist 
     environment:
       - DEBUG=0
-      - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
+      - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,nginx
 
   frontend:
     build: ./frontend
