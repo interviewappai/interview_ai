@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+import pymupdf
+import io
 # Create your models here.
 
 class UserProfile(models.Model):
@@ -14,6 +15,11 @@ class UserProfile(models.Model):
         return self.name
 
 def parse_pdf(pdf_file):
-    # Dummy function for parsing PDF
-    # TODO: Implement actual PDF parsing logic
-    return "Dummy parsed content from PDF"
+    pdf_buffer = io.BytesIO(pdf_file.read())
+    doc = pymupdf.open(stream=pdf_buffer, filetype="pdf")
+    
+    # Now you can work with the PDF
+    # For example, to get text from first page:
+    first_page = doc[0]
+    text = first_page.get_text()
+    return text

@@ -20,3 +20,13 @@ def convert_text_to_speech(text):
     )
 
     return audio
+
+def convert_speech_to_text(audio):
+    client = ElevenLabs(api_key=api_key)
+    transcription = client.speech_to_text.convert(
+        voice_id="CwhRBWXzGAHq8TQ4Fs17",
+        optimize_streaming_latency="0",
+        output_format="text",
+        audio=audio,
+    )
+    return transcription
