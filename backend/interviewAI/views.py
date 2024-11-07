@@ -2,7 +2,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .utils.openai import get_completion
-from .utils.elevenlabs import convert_text_to_speech,convert_speech_to_text
+from .utils.elevenlabs import convert_text_to_speech
+from .utils.speech_to_text import convert_speech_to_text
+from .utils.text import extract_score
 from base64 import b64encode
 from rest_framework.permissions import IsAuthenticated
 # Create your views here.
@@ -38,15 +40,14 @@ class InterviewStartView(APIView):
 
         # Store context in session
         conversation_history = []
-        if 'conversation_history' not in request.session:
-            request.session['conversation_history'] = [
-                {"role": "system", "content": system_prompt}
-            ]
-            conversation_history = [
-                {"role": "system", "content": system_prompt}
-            ]
-        else:
-            conversation_history = request.session['conversation_history']
+        
+        request.session['conversation_history'] = [
+            {"role": "system", "content": system_prompt}
+        ]
+        conversation_history = [
+            {"role": "system", "content": system_prompt}
+        ]
+  
         # Call OpenAI API
         response = "We have analyzed your job description and resume and interviewer is ready to start the interview."
         response = response + " " + get_completion(conversation_history)
@@ -61,7 +62,8 @@ class InterviewStartView(APIView):
 
         # Encode audio bytes to base64 string
         audio_base64 = b64encode(audio_bytes).decode('utf-8')
-        
+        conversation_history.append({"role": "assistant", "content": response})
+        request.session['conversation_history'] = conversation_history
         return Response({
             "response": audio_base64
         }, status=status.HTTP_200_OK)
@@ -75,18 +77,43 @@ class SubmitAnswer(APIView):
         if 'conversation_history' not in request.session:
             return Response({"error": "Conversation history is not found."}, status=status.HTTP_400_BAD_REQUEST) 
         conversation_history = request.session['conversation_history']
+        answer=request.FILES['answer']
+
         parsed_audio = convert_speech_to_text(request.FILES['answer'])
-        parsed_audio = parsed_audio.replace("\n", " ")
-        parsed_audio = parsed_audio.replace("\r", " ")
-        parsed_audio = parsed_audio.replace("\t", " ")
-        parsed_audio = parsed_audio.replace("\v", " ")
-        parsed_audio = parsed_audio.replace("\f", " ")
-        parsed_audio = parsed_audio.replace("\b", " ")
         
-        # Add the answer to the conversation history
+        # # Add the answer to the conversation history
         conversation_history.append({"role": "user", "content": parsed_audio})
+        
+        response = get_completion(conversation_history)
+        print(response)
+        audio_response = convert_text_to_speech(str(response))
+
+        # Convert generator to bytes if needed
+        if hasattr(audio_response, '__iter__') and not isinstance(audio_response, bytes):
+            audio_bytes = b''.join(audio_response)
+        else:
+            audio_bytes = audio_response
+
+        # Encode audio bytes to base64 string
+        audio_base64 = b64encode(audio_bytes).decode('utf-8')
+        request.session['conversation_history'] = conversation_history
+        return Response({
+            "response":audio_base64
+        }, status=status.HTTP_200_OK)
+
+class InterviewEnd(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        if 'conversation_history' not in request.session:
+            return Response({"error": "Conversation history is not found."}, status=status.HTTP_400_BAD_REQUEST) 
+        conversation_history = request.session['conversation_history']
+        conversation_history.append({"role": "user", "content": "End Interview, Thank you for your time"})
         request.session['conversation_history'] = conversation_history
         response = get_completion(conversation_history)
+
         return Response({
-            "response": response
+            "response":response,
+            "score":extract_score(response)
         }, status=status.HTTP_200_OK)
+        

@@ -4,6 +4,7 @@
     <Card v-if="!interviewStarted && !interviewEnded" class="w-full max-w-md p-6 shadow-lg">
       <CardHeader>
         <CardTitle>Welcome to Your Interview</CardTitle>
+       
         <CardDescription>Here are your profile details:</CardDescription>
       </CardHeader>
       <CardContent>
@@ -92,7 +93,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Toaster } from '@/components/ui/toast';
 import { useToast } from '@/components/ui/toast';
-import { testAnswer } from '@/testAnswer';
+import { AudioConverter } from '@/lib/convertToWav';
+
+
 const { toast } = useToast();
 
 const profileStore = useProfileStore();
@@ -105,6 +108,7 @@ const interviewEnded = ref(false); // Track if the interview has ended
 let mediaRecorder: MediaRecorder | null = null; // MediaRecorder instance
 let audioChunks: Blob[] = []; // Store audio chunks
 const audioBlobUrl = ref<string | null>(null); // URL for the audio blob
+let audioFile = ref(null as Blob | null);
 const scoreCardVisible = ref(false); // Track if the scorecard is visible
 const score = ref(0); // Score percentage
 const audio = ref(null as HTMLAudioElement | null); // Add this ref
@@ -147,6 +151,7 @@ const playAudioFromBase64 = (base64Audio: string) => {
       URL.revokeObjectURL(audioUrl);
 currentAIState.value.speaking = false;
 currentAIState.value.listening = true
+currentAIState.value.processing=false
 
     }
   } catch (error) {
@@ -208,7 +213,9 @@ const toggleRecording = async (cancel=false) => {
   } else {
     // Start recording
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder =  new MediaRecorder(stream, {
+        mimeType: 'audio/webm' // Browser usually supports this format
+      })
     mediaRecorder.start();
     isRecording.value = true;
 
@@ -216,8 +223,10 @@ const toggleRecording = async (cancel=false) => {
       audioChunks.push(event.data);
     };
 
-    mediaRecorder.onstop = () => {
+    mediaRecorder.onstop = async() => {
       const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+      
+      audioFile.value = await AudioConverter.convertToWav(audioBlob);
       audioChunks = []; // Reset the chunks for the next recording
       audioBlobUrl.value = URL.createObjectURL(audioBlob); // Create a Blob URL for downloading
     };
@@ -227,19 +236,24 @@ const submitAnswer = async () => {
 currentAIState.value.processing=true
 currentAIState.value.listening=false
 currentAIState.value.speaking=false
-
-const res = await interviewStore.submitAnswer(testAnswer);
-
-
+if(audioFile.value==null) return
+const res = await interviewStore.submitAnswer(audioFile.value);
+currentAIState.value.processing=false
+if(res!=null) 
+audioBlobUrl.value = null
+playAudioFromBase64(res.response);
 }
 
-const endInterview = () => {
+const endInterview = async() => {
   // Logic to end the interview
   console.log("Ending interview...");
+  const res = await interviewStore.endInterview();
+  if(res!=null) score.value = res?.score
   interviewStarted.value = false; // Reset the interview state
   interviewEnded.value = true; // Set interviewEnded to true
   scoreCardVisible.value = true; // Show the scorecard
   audioBlobUrl.value = null; // Reset the audio blob URL
+
 };
 
 </script>

@@ -21,12 +21,23 @@ export const useInterviewStore = defineStore("interview", {
         this.loading = false;
       }
     },
-    async submitAnswer(audioBlobUrl:string) {
+    async submitAnswer(audioBlob:Blob) {
       try {
         const formData = new FormData();
-        formData.append("answer", audioBlobUrl);
-        const response = await axios.post("/api/interview/submit", formData);
+        formData.append('answer', audioBlob, 'recording.wav')
+        const response = await axios.post("/api/interview/answer", formData);
         return response.data;
+      } catch (err) {
+        this.error = err as Error;
+        return null;
+      } finally {
+        this.loading = false;
+      }
+    },
+    async endInterview() {
+      try {
+        const response = await axios.post("/api/interview/end");
+        return response;
       } catch (err) {
         this.error = err as Error;
         return null;
