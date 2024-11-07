@@ -48,11 +48,7 @@
 
         <Button @click="endInterview" class="" variant="outline">End Interview</Button>
       </div>
-      <div v-if="audioBlobUrl">
-        <a :href="audioBlobUrl" download="recording.wav">
-          <Button variant="outline">Download Recording</Button>
-        </a>
-      </div>
+ 
     </div>
 
     <Dialog v-model:open="showDialog">
@@ -204,11 +200,11 @@ const startInterview = async () => {
   loading.value = false;
 }
 
-const toggleRecording = async (cancel=false) => {
+const toggleRecording = async () => {
   if (isRecording.value) {
     // Stop recording
     mediaRecorder?.stop();
-    if(cancel==true) audioBlobUrl.value = null
+    
     isRecording.value = false;
   } else {
     // Start recording
