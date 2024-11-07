@@ -65,7 +65,7 @@ export class AudioConverter {
   
     public static async convertToWav(audioBlob: Blob): Promise<Blob> {
       try {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const audioContext = new AudioContext();
         const arrayBuffer = await audioBlob.arrayBuffer();
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
         const wavBuffer = this.audioBufferToWav(audioBuffer);

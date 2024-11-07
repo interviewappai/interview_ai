@@ -244,7 +244,7 @@ const endInterview = async() => {
   // Logic to end the interview
   console.log("Ending interview...");
   const res = await interviewStore.endInterview();
-  if(res!=null) score.value = res?.score
+  if(res!=null) score.value = res?.data?.score
   interviewStarted.value = false; // Reset the interview state
   interviewEnded.value = true; // Set interviewEnded to true
   scoreCardVisible.value = true; // Show the scorecard

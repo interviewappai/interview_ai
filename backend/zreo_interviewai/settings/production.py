@@ -1,26 +1,24 @@
 from .base import *
 
-DEBUG = False
+DEBUG = True
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_NAME'),
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),
-        'HOST': env('DB_HOST'),
-        'PORT': env('DB_PORT'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-ALLOWED_HOSTS = ['http://localhost:8000','nginx']
+ALLOWED_HOSTS = ['http://localhost:8000','nginx','localhost']
 
-STATIC_ROOT = '/app/staticfiles'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
-    '/app/dist/assets',
+    os.path.join(BASE_DIR, 'dist/assets'),
 ]
+
 
 TEMPLATES = [
     {
