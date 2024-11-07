@@ -21,5 +21,19 @@ export const useInterviewStore = defineStore("interview", {
         this.loading = false;
       }
     },
+    async submitAnswer(audioBlobUrl:string) {
+      try {
+        const formData = new FormData();
+        formData.append("answer", audioBlobUrl);
+        const response = await axios.post("/api/interview/submit", formData);
+        return response.data;
+      } catch (err) {
+        this.error = err as Error;
+        return null;
+      } finally {
+        this.loading = false;
+      }
+    }
   },
+
 });

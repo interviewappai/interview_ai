@@ -47,13 +47,15 @@ const profile = ref({
 const isEditing = ref(false);
 const resumePdf = ref(null);
 const { toast } = useToast();
-
-onMounted(async () => {
+async function fetchUserProfile() {
   await profileStore.fetchUserProfile(); // Fetch user profile from the store
   if (profileStore.userProfile) {
     profile.value = profileStore.userProfile;
     isEditing.value = true;
   }
+}
+onMounted(async () => {
+  await fetchUserProfile();
 });
 
 const handleFileUpload = (event) => {
@@ -69,6 +71,7 @@ const submitForm = async () => {
       variant: 'destructive',
     });
   } else {
+    await fetchUserProfile();
     toast({
       title: 'Success',
       description: `Profile ${isEditing.value ? 'updated' : 'created'} successfully`,
