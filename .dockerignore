@@ -25,6 +25,7 @@ frontend/dist/
 
 # Ignore configuration files that shouldn't be copied
 /env
+/venv
 *.env
 .env*
 .dockerignore

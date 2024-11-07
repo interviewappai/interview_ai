@@ -23,6 +23,7 @@ __pycache__/
 *.db
 *.sqlite3
 env/
+venv/
 
 # Django specific
 *.log
