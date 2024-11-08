@@ -52,7 +52,7 @@ export const useAuthStore = defineStore('auth', {
         this.token = token
         try {
           // Validate the token with the backend
-          const response = await axios.get('/api/profile', {
+          const response = await axios.get('/api/profile/', {
             headers: { Authorization: `Bearer ${token}` }
           })
           this.user = response.data.user
