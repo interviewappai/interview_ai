@@ -7,6 +7,7 @@ import { fileURLToPath, URL } from 'node:url'
 export default defineConfig(({ mode }) => {
   const isDev = mode === 'development'
   const backendUrl = process.env.VITE_BACKEND_URL
+  console.log('Backend URL:', backendUrl)
   return {
     css: {
       postcss: {

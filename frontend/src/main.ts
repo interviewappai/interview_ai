@@ -11,7 +11,8 @@ const pinia = createPinia()
 app.use(pinia)
 app.use(router)
 
-
+// Set base URL for all requests
+axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL
 
 // Add a request interceptor
 axios.interceptors.request.use(
