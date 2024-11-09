@@ -11,10 +11,10 @@ DATABASES = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-ALLOWED_HOSTS = ['http://localhost:8000','localhost', 'nginx','127.0.0.1']  # Remove http:// and port
-
 if env('ON_EXTERNAL_SERVER') == 'True':
-    ALLOWED_HOSTS.extend([env('EXTERNAL_SERVER_HOST'), env('EXTERNAL_SERVER_CLIENT_HOST')])
+    ALLOWED_HOSTS = ['http://localhost:8000','localhost', 'nginx','127.0.0.1', env('EXTERNAL_SERVER_HOST'),env('EXTERNAL_SERVER_CLIENT_HOST')]
+else:
+    ALLOWED_HOSTS = ['http://localhost:8000','localhost', '127.0.0.1']
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
