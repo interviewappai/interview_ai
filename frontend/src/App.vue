@@ -34,9 +34,8 @@ mode.value='dark'
 </script>
 
 <template>
-  <div class="min-h-screen">
-   
-    <header class="border-b border-black sticky top-0 z-50 bg-dark h-16 px-4">
+  <div class="h-dvh">
+    <header class="border-b border-black sticky top-0 z-50 bg-dark h-20 px-4 py-2">
       <div class="">
         <nav class="flex items-center justify-between">
           <RouterLink to="/" class="text-xl font-bold">Zreo</RouterLink>
@@ -124,12 +123,12 @@ nav {
   width: 100%;
   font-size: 12px;
   text-align: center;
-  margin-top: 2rem;
+
 }
 
 nav a {
   display: inline-block;
-  padding: 0 1rem;
+  padding:  1rem;
   border-left: 1px solid var(--color-border);
 }
 

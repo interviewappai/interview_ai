@@ -1,83 +1,3 @@
-<template>
-  <div class="flex flex-col items-center justify-center min-h-screen">
-    <Toaster />
-    <Card v-if="!interviewStarted && !interviewEnded" class="w-full max-w-md p-6 shadow-lg">
-      <CardHeader>
-        <CardTitle>Welcome to Your Interview</CardTitle>
-       
-        <CardDescription>Here are your profile details:</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div class="flex flex-col space-y-2">
-          <p><strong>Name:</strong> {{ profileStore.userProfile?.name || 'N/A' }}</p>
-          <p><strong>Age:</strong> {{ profileStore.userProfile?.age || 'N/A' }}</p>
-          <p class="h-40 overflow-y-auto"><strong>Resume:</strong> {{ profileStore.userProfile?.resume_data || 'N/A' }}
-          </p>
-          <div>
-            <Label for="jobDescription">Job Description</Label>
-            <Textarea id="jobDescription" v-model="jobDescription" rows="3" placeholder="Enter job description" />
-          </div>
-        </div>
-      </CardContent>
-      <CardFooter class="flex flex-col items-center">
-        <Button @click="startInterview" class="w-full"><svg v-if="loading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-    </svg>Start Interview</Button>
-        <RouterLink to="/profile">
-          <Button variant="outline" class="mt-4">Update Profile</Button>
-        </RouterLink>
-      </CardFooter>
-    </Card>
-
-    <div v-if="interviewStarted " class="flex flex-col items-center">
-      <div class="flex flex-col space-y-4 py-5 font-bold text-xl">
-        <div v-if="currentAIState.speaking==true">speaking ...</div>
-        <div v-if="currentAIState.listening==true">listening ...</div>
-        <div v-if="currentAIState.processing==true">processing ...</div>
-      </div>
-      <div class="rounded-full bg-green-500 h-16 w-16 flex items-center justify-center" :class="currentAIState.speaking ? 'voice-indicator' : ''">
-        <span class="text-white">🎤</span> <!-- Placeholder for voice indicator -->
-      </div>
-      <div class="flex space-x-4 mt-4">
-        <Button @click="toggleRecording" v-if="!isRecording && !audioBlobUrl" class="" :disabled="currentAIState.speaking||currentAIState.processing">Start Recording</Button>
-        <Button @click="toggleRecording" v-if="isRecording" class="" :disabled="currentAIState.speaking||currentAIState.processing">Stop Recording</Button>
-
-        <Button @click="submitAnswer" v-if="!isRecording && audioBlobUrl!==null">Submit Answer</Button>
-        <Button @click="()=>audioBlobUrl=null" v-if="!isRecording && audioBlobUrl!==null">Cancel Answer</Button>
-
-        <Button @click="endInterview" class="" variant="outline">End Interview</Button>
-      </div>
- 
-    </div>
-
-    <Dialog v-model:open="showDialog">
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Access Denied</DialogTitle>
-          <DialogDescription>
-            You cannot access this page without completing your profile.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <RouterLink to="/profile"><Button>Complete Profile</Button></RouterLink>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-
-    <div v-if="scoreCardVisible" class="mt-6 p-4 border rounded shadow-lg">
-      <h2 class="text-xl font-bold">Interview Score</h2>
-      <p class="text-lg">Score: {{ score }}%</p>
-      <h3 class="font-semibold">Points for Improvement:</h3>
-      <ul>
-        <li>1. Practice answering common interview questions.</li>
-        <li>2. Improve body language and eye contact.</li>
-        <li>3. Research the company and role thoroughly.</li>
-      </ul>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useProfileStore } from '@/stores/profile';
@@ -90,8 +10,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Toaster } from '@/components/ui/toast';
 import { useToast } from '@/components/ui/toast';
 import { AudioConverter } from '@/lib/convertToWav';
-
-
+import MeetingControls from '@/components/Interview/MeetingControls.vue';
+import InterviewScreen from '@/components/Interview/InterviewScreen.vue';
 const { toast } = useToast();
 
 const profileStore = useProfileStore();
@@ -108,6 +28,7 @@ let audioFile = ref(null as Blob | null);
 const scoreCardVisible = ref(false); // Track if the scorecard is visible
 const score = ref(0); // Score percentage
 const audio = ref(null as HTMLAudioElement | null); // Add this ref
+const incomingCall = ref(false);
 
 // current state
 let currentAIState = ref({
@@ -166,9 +87,21 @@ onMounted(async () => {
     showDialog.value = true; // Show the dialog if the profile is not complete
   }
 });
-
+let responseAudio = ref(null as string | null);
 const startInterview = async () => {
+  if(jobDescription.value.length==0) { 
+    toast({
+    title: "Error",
+    description: "Please enter a job description",
+    variant: "destructive",
+
+  });
+return;
+}
+
   loading.value = true;
+
+
   try {
     const response = await interviewStore.startInterview({
       resume_data: profileStore.userProfile?.resume_data,
@@ -178,8 +111,12 @@ const startInterview = async () => {
       console.log("Interview started:", response);
       interviewStarted.value = true; // Set interviewStarted to true
       // Play the audio response
+      
       if (response.response) {
-        playAudioFromBase64(response.response);
+        incomingCall.value = true;
+       
+        responseAudio.value = response.response;
+       
       }
     } else {
       toast({
@@ -199,14 +136,22 @@ const startInterview = async () => {
   }
   loading.value = false;
 }
+const acceptCall = async () => {
+  incomingCall.value = false; 
+  interviewStarted.value = true;
+  if(responseAudio.value==null) return;
+  playAudioFromBase64(responseAudio.value);
+}
 
 const toggleRecording = async () => {
   if (isRecording.value) {
+    console.log("stop recording")
     // Stop recording
     mediaRecorder?.stop();
     
     isRecording.value = false;
   } else {
+    console.log("start recording")
     // Start recording
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorder =  new MediaRecorder(stream, {
@@ -253,6 +198,111 @@ const endInterview = async() => {
 };
 
 </script>
+<template>
+  <div class="flex flex-col items-center justify-center h-[90dvh] w-full max-w-screen overflow-x-hidden">
+    <Toaster class="right-0" />
+    <Card v-if="!interviewStarted && !interviewEnded" class="w-full max-w-md p-6 shadow-lg">
+      <CardHeader>
+        <CardTitle>Welcome to Your Interview</CardTitle>
+       
+        <CardDescription>Here are your profile details:</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div class="flex flex-col space-y-2">
+          <p><strong>Name:</strong> {{ profileStore.userProfile?.name || 'N/A' }}</p>
+          <p><strong>Age:</strong> {{ profileStore.userProfile?.age || 'N/A' }}</p>
+          <p class="h-40 overflow-y-auto"><strong>Resume:</strong> {{ profileStore.userProfile?.resume_data || 'N/A' }}
+          </p>
+          <div>
+            <Label for="jobDescription">Job Description</Label>
+            <Textarea id="jobDescription" v-model="jobDescription" rows="3" placeholder="Enter job description" />
+          </div>
+        </div>
+      </CardContent>
+      <CardFooter class="flex flex-col items-center">
+        <Button @click="startInterview" class="w-full"><svg v-if="loading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>Start Interview</Button>
+        <RouterLink to="/profile">
+          <Button variant="outline" class="mt-4">Update Profile</Button>
+        </RouterLink>
+      </CardFooter>
+    </Card>
+
+    <div v-if="interviewStarted " class="flex flex-col items-center h-full w-full">
+      <!-- <div class="flex flex-col space-y-4 py-5 font-bold text-xl">
+        <div v-if="currentAIState.speaking==true">speaking ...</div>
+        <div v-if="currentAIState.listening==true">listening ...</div>
+        <div v-if="currentAIState.processing==true">processing ...</div>
+      </div>
+      <div class="rounded-full bg-green-500 h-16 w-16 flex items-center justify-center" :class="currentAIState.speaking ? 'voice-indicator' : ''">
+        <span class="text-white">🎤</span>
+      </div>
+      <div class="flex space-x-4 mt-4">
+        <Button @click="toggleRecording" v-if="!isRecording && !audioBlobUrl" class="" :disabled="currentAIState.speaking||currentAIState.processing">Start Recording</Button>
+        <Button @click="toggleRecording" v-if="isRecording" class="" :disabled="currentAIState.speaking||currentAIState.processing">Stop Recording</Button>
+
+        <Button @click="submitAnswer" v-if="!isRecording && audioBlobUrl!==null">Submit Answer</Button>
+        <Button @click="()=>audioBlobUrl=null" v-if="!isRecording && audioBlobUrl!==null">Cancel Answer</Button>
+
+        <Button @click="endInterview" class="" variant="outline">End Interview</Button>
+      </div> -->
+      <div class="relative h-full w-full">
+        <InterviewScreen :speaking="currentAIState.speaking" :listening="currentAIState.listening" :processing="currentAIState.processing" class="h-[80vh] w-full"/>
+        <MeetingControls :speaking="currentAIState.speaking" :listening="currentAIState.listening" :processing="currentAIState.processing" :isRecording="isRecording" :currentAIState="currentAIState" :AudioBlobUrl="audioBlobUrl" @toggleRecording="toggleRecording" @cancelRecording="audioBlobUrl=null" @submitAnswer="submitAnswer" @endInterview="endInterview"/>
+      </div>
+ 
+    </div>
+
+    <Dialog v-model:open="showDialog">
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Access Denied</DialogTitle>
+          <DialogDescription>
+            You cannot access this page without completing your profile.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <RouterLink to="/profile"><Button>Complete Profile</Button></RouterLink>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    
+
+    <div v-if="scoreCardVisible" class="mt-6 p-4 border rounded shadow-lg">
+      <h2 class="text-xl font-bold">Interview Score</h2>
+      <p class="text-lg">Score: {{ score }}%</p>
+      <h3 class="font-semibold">Points for Improvement:</h3>
+      <ul>
+        <li>1. Practice answering common interview questions.</li>
+        <li>2. Improve body language and eye contact.</li>
+        <li>3. Research the company and role thoroughly.</li>
+      </ul>
+    </div>
+    <Dialog v-model:open="incomingCall" class="z-50 flex items-center justify-center">
+     
+      <DialogContent class="w-full max-w-sm md:max-w-md">
+        <DialogHeader class="mb-4">
+          <DialogTitle class="flex flex-col items-center justify-center py-3">
+            <div><img src="@/assets/img/incoming_call.gif" alt="incoming-call-image" class="w-24 object-contain"></div>
+            <div class="ml-4">Incoming Call</div>
+            </DialogTitle>
+     <DialogDescription class="text-center">
+      <p>Would you like to join the interview?</p>
+      </DialogDescription>
+        </DialogHeader>
+        <DialogFooter class="flex gap-5 flex-wrap justify-center">
+          <Button @click="acceptCall">Accept</Button>
+          <Button variant="outline" @click="incomingCall = false">Decline</Button>
+        </DialogFooter>
+      </DialogContent>
+    
+    </Dialog>
+  </div>
+</template>
+
+
 
 <style scoped>
 .voice-indicator {
