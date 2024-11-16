@@ -34,10 +34,12 @@ export default defineConfig(({ mode }) => {
         '/api': {
           target: isDev ? `${backendUrl}/api` : backendUrl,
           changeOrigin: true,
+        credentials: 'include',
           rewrite: (path) => path.replace(/^\/api/, '')
         },
         '/media': {
           target: backendUrl,
+          credentials: 'include',
           changeOrigin: true
         }
       }

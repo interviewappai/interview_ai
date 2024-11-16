@@ -12,8 +12,15 @@ app.use(pinia)
 app.use(router)
 
 // Set base URL for all requests
-axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL
+if (import.meta.env.DEV) {
+  axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL
+} else {
+  axios.defaults.baseURL = '/api'  // In production, use relative path since nginx handles routing
+}
 
+axios.defaults.withCredentials = true
+axios.defaults.xsrfCookieName = 'csrftoken'
+axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 // Add a request interceptor
 axios.interceptors.request.use(
   (config) => {

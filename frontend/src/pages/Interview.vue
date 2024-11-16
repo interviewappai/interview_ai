@@ -108,10 +108,7 @@ return;
       job_description: jobDescription.value,
     });
     if (response) {
-      console.log("Interview started:", response);
-      interviewStarted.value = true; // Set interviewStarted to true
-      // Play the audio response
-      
+
       if (response.response) {
         incomingCall.value = true;
        
@@ -196,6 +193,13 @@ const endInterview = async() => {
   audioBlobUrl.value = null; // Reset the audio blob URL
 
 };
+const restartInterview = async () => {
+  console.log("Restarting interview...");
+  scoreCardVisible.value = false; // Hide the scorecard
+  interviewStarted.value = false; // Reset the interview state
+  interviewEnded.value = false; // Reset the interview state
+  audioBlobUrl.value = null; // Reset the audio blob URL
+};
 
 </script>
 <template>
@@ -204,7 +208,7 @@ const endInterview = async() => {
     <Card v-if="!interviewStarted && !interviewEnded" class="w-full max-w-md p-6 shadow-lg">
       <CardHeader>
         <CardTitle>Welcome to Your Interview</CardTitle>
-       
+  
         <CardDescription>Here are your profile details:</CardDescription>
       </CardHeader>
       <CardContent>
@@ -231,23 +235,6 @@ const endInterview = async() => {
     </Card>
 
     <div v-if="interviewStarted " class="flex flex-col items-center h-full w-full">
-      <!-- <div class="flex flex-col space-y-4 py-5 font-bold text-xl">
-        <div v-if="currentAIState.speaking==true">speaking ...</div>
-        <div v-if="currentAIState.listening==true">listening ...</div>
-        <div v-if="currentAIState.processing==true">processing ...</div>
-      </div>
-      <div class="rounded-full bg-green-500 h-16 w-16 flex items-center justify-center" :class="currentAIState.speaking ? 'voice-indicator' : ''">
-        <span class="text-white">🎤</span>
-      </div>
-      <div class="flex space-x-4 mt-4">
-        <Button @click="toggleRecording" v-if="!isRecording && !audioBlobUrl" class="" :disabled="currentAIState.speaking||currentAIState.processing">Start Recording</Button>
-        <Button @click="toggleRecording" v-if="isRecording" class="" :disabled="currentAIState.speaking||currentAIState.processing">Stop Recording</Button>
-
-        <Button @click="submitAnswer" v-if="!isRecording && audioBlobUrl!==null">Submit Answer</Button>
-        <Button @click="()=>audioBlobUrl=null" v-if="!isRecording && audioBlobUrl!==null">Cancel Answer</Button>
-
-        <Button @click="endInterview" class="" variant="outline">End Interview</Button>
-      </div> -->
       <div class="relative h-full w-full">
         <InterviewScreen :speaking="currentAIState.speaking" :listening="currentAIState.listening" :processing="currentAIState.processing" class="h-[80vh] w-full"/>
         <MeetingControls :speaking="currentAIState.speaking" :listening="currentAIState.listening" :processing="currentAIState.processing" :isRecording="isRecording" :currentAIState="currentAIState" :AudioBlobUrl="audioBlobUrl" @toggleRecording="toggleRecording" @cancelRecording="audioBlobUrl=null" @submitAnswer="submitAnswer" @endInterview="endInterview"/>
@@ -279,6 +266,7 @@ const endInterview = async() => {
         <li>2. Improve body language and eye contact.</li>
         <li>3. Research the company and role thoroughly.</li>
       </ul>
+      <Button @click="restartInterview" class="mt-4">Try Again</Button>
     </div>
     <Dialog v-model:open="incomingCall" class="z-50 flex items-center justify-center">
      

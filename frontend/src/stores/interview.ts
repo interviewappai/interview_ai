@@ -13,7 +13,9 @@ export const useInterviewStore = defineStore("interview", {
       this.error = null;
       try {
         const response = await axios.post("/api/interview/start", data);
+
         return response.data;
+        
       } catch (err) {
         this.error = err as Error;
         return null;
@@ -44,7 +46,8 @@ export const useInterviewStore = defineStore("interview", {
       } finally {
         this.loading = false;
       }
-    }
+    },
+
   },
 
 });
