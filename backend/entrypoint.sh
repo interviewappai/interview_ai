@@ -1,12 +1,11 @@
 #!/bin/sh
 
-
-echo "Backend environment variables:"
-env | grep -E "DJANGO_|DEBUG|PYTHONPATH"
-
 # Apply database migrations
 echo "Applying database migrations..."
 python manage.py migrate
+
+# set PYTHONUNBUFFERED=1
+export PYTHONUNBUFFERED=1
 
 # Collect static files
 echo "Collecting static files..."
