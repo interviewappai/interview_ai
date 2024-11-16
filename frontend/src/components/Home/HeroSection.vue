@@ -44,7 +44,7 @@
 	}
 	100% {
 		transform: rotate(360deg);
-		transfrom: scale(2);
+		transform: scale(2);
         background-color: blue;
 	}
 }

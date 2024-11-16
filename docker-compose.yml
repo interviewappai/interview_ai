@@ -5,27 +5,23 @@ services:
       - ./backend/.env.prod
     volumes:
       - ./backend:/app
-      - sqlite_data:/app/data
-      - media_files:/app/media
+      - sqlite_data:/app/data  # for persistent sqlite database
+      - media_files:/app/media  # Add this line
       - frontend_build:/app/dist 
     environment:
       - DEBUG=0
       - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,nginx
-    networks:
-      - app-network
-    expose:
-      - 8000
 
   frontend:
     build: ./frontend
     env_file:
       - ./frontend/.env.prod
+    environment:
+      - NODE_ENV=production
+    command: >
+      sh -c "env && npm run build"
     volumes:
       - build_files:/app/dist
-    networks:
-      - app-network
-    environment:
-      - VITE_BACKEND_URL=http://nginx
 
   nginx:
     build: ./nginx
@@ -36,15 +32,9 @@ services:
     depends_on:
       - backend
       - frontend
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
 
 volumes:
   build_files:
-  sqlite_data:
-  media_files:
+  sqlite_data:  # volume for sqlite database
+  media_files: 
   frontend_build:

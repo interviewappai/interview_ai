@@ -1,5 +1,9 @@
 #!/bin/sh
 
+
+echo "Backend environment variables:"
+env | grep -E "DJANGO_|DEBUG|PYTHONPATH"
+
 # Apply database migrations
 echo "Applying database migrations..."
 python manage.py migrate
