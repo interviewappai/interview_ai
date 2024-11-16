@@ -10,12 +10,56 @@ export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null as User | null,
     token: null as string | null,
+    serverStatus: {
+      isWarmedUp: false,
+      isChecking: false,
+      error: null as string | null,
+      retry_count: 0
+    }
   }),
   getters: {
     isAuthenticated: (state) => !!state.token,
+    isServerReady: (state) => state.serverStatus.isWarmedUp,
+    isCheckingServer: (state) => state.serverStatus.isChecking,
+    serverError: (state) => state.serverStatus.error,
+    
   },
   actions: {
+    async warmupServer() {
+      if (this.serverStatus.isWarmedUp || this.serverStatus.isChecking) return
+
+      this.serverStatus.isChecking = true
+      this.serverStatus.error = null
+      
+      try {
+        // Send a lightweight request to warm up the server
+        await axios.get('/api/profile/health-check/')
+        this.serverStatus.isWarmedUp = true
+      } catch (error) {
+        this.serverStatus.error = 'Server is starting up, please wait...'
+        // Retry after 5 seconds if the server is not ready
+        // stop after 1 minute
+       
+        const intervalId = setInterval(() => {
+          if (this.serverStatus.retry_count > 2) {
+            clearInterval(intervalId)
+            this.serverStatus.error = 'Server failed to start'
+            return
+          }
+          this.serverStatus.retry_count++
+          this.warmupServer()
+        }, 5000)
+       
+      } finally {
+        this.serverStatus.isChecking = false
+      }
+    },
     async login(email: string, password: string) {
+      // Ensure server is warmed up before attempting login
+      if (!this.serverStatus.isWarmedUp) {
+        await this.warmupServer()
+      }
+
       try {
         const response = await axios.post('/api/auth/login', { email, password })
         this.user = response.data.user
@@ -30,6 +74,11 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     async signup(email: string, password: string) {
+      // Ensure server is warmed up before attempting signup
+      if (!this.serverStatus.isWarmedUp) {
+        await this.warmupServer()
+      }
+
       try {
         const response = await axios.post('/api/auth/signup', { email, password })
         return response.data

@@ -13,6 +13,7 @@ const isAuthenticated = computed(() => authStore.isAuthenticated)
 const isMobileMenuOpen = ref(false)
 
 onMounted(async () => {
+  await authStore.warmupServer()
   await authStore.checkAuth()
 })
 const router = useRouter()

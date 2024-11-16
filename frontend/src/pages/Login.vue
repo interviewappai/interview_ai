@@ -6,6 +6,13 @@
         <CardDescription>Enter your email and password to log in</CardDescription>
       </CardHeader>
       <CardContent>
+         <!-- Add this server status alert -->
+         <div v-if="!authStore.isServerReady" class="mb-4 p-4 rounded-lg" :class="authStore.serverError ? 'bg-red-100' : 'bg-blue-100'">
+          <p class="text-sm" :class="authStore.serverError ? 'text-red-700' : 'text-blue-700'">
+            <span v-if="authStore.isCheckingServer">Connecting to server...</span>
+            <span v-else-if="authStore.serverError">{{ authStore.serverError }}</span>
+          </p>
+        </div>
         <form @submit.prevent="handleSubmit">
           <div class="grid w-full items-center gap-4">
             <div class="flex flex-col space-y-1.5">
