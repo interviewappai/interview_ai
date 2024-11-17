@@ -56,7 +56,7 @@ class InterviewStartView(APIView):
   
         # Call OpenAI API
         response = "We have analyzed your job description and resume and interviewer is ready to start the interview."
-        # response = response + " " + get_completion(conversation_history)
+        response = response + " " + get_completion(conversation_history)
         # convert response to text and then to audio
         audio_response = convert_text_to_speech(str(response))
 

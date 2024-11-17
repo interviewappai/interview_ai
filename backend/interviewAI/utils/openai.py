@@ -10,7 +10,7 @@ def get_completion(history, user_input=None):
     if user_input:
         conversation_history.append({"role": "user", "content": user_input})
     response = openai.chat.completions.create(
-        model="gpt-4",  # Replace with the desired model
+        model="gpt-4o",  # Replace with the desired model
         messages=conversation_history
     )
     return response.choices[0].message.content
