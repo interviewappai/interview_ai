@@ -10,6 +10,7 @@ export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null as User | null,
     token: null as string | null,
+    loading: false,
     serverStatus: {
       isWarmedUp: false,
       isChecking: false,
@@ -59,18 +60,21 @@ export const useAuthStore = defineStore('auth', {
       if (!this.serverStatus.isWarmedUp) {
         await this.warmupServer()
       }
-
+      this.loading = true
       try {
         const response = await axios.post('/api/auth/login', { email, password })
         this.user = response.data.user
         this.token = response.data.access
         localStorage.setItem('token', this.token as string)
+        
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
           throw new Error(error.response.data.error || 'Login failed')
         } else {
           throw new Error('An unexpected error occurred')
         }
+      } finally {
+        this.loading = false
       }
     },
     async signup(email: string, password: string) {
@@ -78,16 +82,20 @@ export const useAuthStore = defineStore('auth', {
       if (!this.serverStatus.isWarmedUp) {
         await this.warmupServer()
       }
+      this.loading = true
 
       try {
         const response = await axios.post('/api/auth/signup', { email, password })
         return response.data
       } catch (error) {
+        this.loading = false
         if (axios.isAxiosError(error) && error.response) {
           throw new Error(error.response.data.error || 'Signup failed')
         } else {
           throw new Error('An unexpected error occurred')
         }
+      }finally {
+        this.loading = false
       }
     },
     logout() {
