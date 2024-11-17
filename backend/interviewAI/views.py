@@ -91,9 +91,9 @@ class SubmitAnswer(APIView):
         # # Add the answer to the conversation history
         conversation_history.append({"role": "user", "content": parsed_audio})
         
-        # response = get_completion(conversation_history)
-        response="Great Answer"
-        audio_response = convert_text_to_speech(str(response))
+        response = get_completion(conversation_history)
+        # response="Great Answer"
+        # audio_response = convert_text_to_speech(str(response))
 
         # Convert generator to bytes if needed
         if hasattr(audio_response, '__iter__') and not isinstance(audio_response, bytes):
@@ -119,8 +119,8 @@ class InterviewEnd(APIView):
         conversation_history = request.session['conversation_history']
         conversation_history.append({"role": "user", "content": "End Interview, Thank you for your time"})
         request.session['conversation_history'] = conversation_history
-        # response = get_completion(conversation_history)
-        response="Thank you for your time, score:85/100"
+        response = get_completion(conversation_history)
+        # response="Thank you for your time, score:85/100"
 
         return Response({
             "response":response,
