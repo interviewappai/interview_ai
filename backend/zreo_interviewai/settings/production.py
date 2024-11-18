@@ -14,7 +14,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 if env('ON_EXTERNAL_SERVER') == 'True':
     ALLOWED_HOSTS = ['http://localhost:8000','localhost', 'nginx','127.0.0.1', env('EXTERNAL_SERVER_HOST'),env('EXTERNAL_SERVER_CLIENT_HOST')]
-    CORS_ALLOWED_ORIGINS=['http://localhost','http://nginx',env('EXTERNAL_SERVER_HOST'),env('EXTERNAL_SERVER_CLIENT_HOST')]
+    CORS_ALLOWED_ORIGINS=['http://localhost','http://nginx','https://'+env('EXTERNAL_SERVER_HOST'),'https://'+env('EXTERNAL_SERVER_CLIENT_HOST')]
     CSRF_TRUSTED_ORIGINS=['https://'+env('EXTERNAL_SERVER_HOST'),'https://'+env('EXTERNAL_SERVER_CLIENT_HOST'),'http://localhost','http://nginx']
 else:
     ALLOWED_HOSTS = ['http://localhost:8000','localhost', '127.0.0.1','nginx']
