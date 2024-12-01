@@ -25,6 +25,8 @@ services:
     build: ./nginx
     ports:
       - "80:80"
+    env_file:
+      - ./nginx/.env.local
     volumes:
       - build_files:/usr/share/nginx/html
     depends_on:
