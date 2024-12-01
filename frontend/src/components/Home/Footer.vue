@@ -5,7 +5,7 @@
           <div>
             <h3 class="text-xl font-bold mb-4">Company</h3>
             <ul class="space-y-2">
-              <li><a href="#" class="text-gray-400 hover:text-primary">About Zreo</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-primary">About MockPros</a></li>
               <li><a href="#" class="text-gray-400 hover:text-primary">Careers</a></li>
               <li><a href="#" class="text-gray-400 hover:text-primary">Blog</a></li>
               <li><a href="#" class="text-gray-400 hover:text-primary">Press</a></li>
@@ -41,7 +41,7 @@
         </div>
         <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
           <div class="text-gray-400 mb-4 md:mb-0">
-            © 2024 Zreo AI. All rights reserved.
+            © 2024 MockPros AI. All rights reserved.
           </div>
           <div class="flex space-x-6">
             <a href="#" class="text-gray-400 hover:text-primary">

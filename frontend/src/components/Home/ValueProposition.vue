@@ -34,7 +34,7 @@ const benefits = [
   <section class="section-padding bg-dark-lighter">
     <div class="container-width">
       <h2 class="text-4xl font-bold text-center mb-16 gradient-text">
-        Why Choose Zreo?
+        Why Choose MockPros?
       </h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <div 

@@ -171,16 +171,35 @@ const toggleRecording = async () => {
   }
 };
 const submitAnswer = async () => {
-currentAIState.value.processing=true
-currentAIState.value.listening=false
-currentAIState.value.speaking=false
-if(audioFile.value==null) return
-const res = await interviewStore.submitAnswer(audioFile.value);
-currentAIState.value.processing=false
-if(res!=null) 
-audioBlobUrl.value = null
-playAudioFromBase64(res.response);
-}
+  currentAIState.value.processing = true;
+  currentAIState.value.listening = false;
+  currentAIState.value.speaking = false;
+  
+  if (audioFile.value == null) return;
+  
+  try {
+    const res = await interviewStore.submitAnswer(audioFile.value);
+    if (res == null) {
+      toast({
+        title: "Error",
+        description: "Failed to recognize answer, make sure you are speaking clearly",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    audioBlobUrl.value = null;
+    playAudioFromBase64(res.response);
+  } catch (error: any) {
+    toast({
+      title: "Error",
+      description: error?.message || "Failed to submit answer. Please try again.",
+      variant: "destructive",
+    });
+  } finally {
+    currentAIState.value.processing = false;
+  }
+};
 
 const endInterview = async() => {
   // Logic to end the interview

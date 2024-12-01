@@ -39,7 +39,7 @@ mode.value='dark'
     <header class="border-b border-black sticky top-0 z-50 bg-dark h-20 px-4 py-2">
       <div class="">
         <nav class="flex items-center justify-between">
-          <RouterLink to="/" class="text-xl font-bold">Zreo</RouterLink>
+          <RouterLink to="/" class="text-xl font-bold">MockPros</RouterLink>
 
           <!-- Desktop Navigation -->
           <div class="hidden md:flex items-center space-x-4">
@@ -92,7 +92,7 @@ mode.value='dark'
           >
             {{ item.name }}
           </RouterLink>
-          <RouterLink to="/profile" @click="isMobileMenuOpen = false" v-if="isAuthenticated" class="block py-2 text-sm font-medium transition-colors hover:text-primary">Profile</RouterLink>
+          <RouterLink to="/profile" @click="isMobileMenuOpen = false" v-if="isAuthenticated" class="block py-2 text-sm font-medium transition-colors hover:text-primary hidden md:block">Profile</RouterLink>
           <template v-if="!isAuthenticated">
             <Button variant="ghost" asChild class="w-full justify-start">
               <RouterLink to="/login" @click="isMobileMenuOpen = false">Login</RouterLink>

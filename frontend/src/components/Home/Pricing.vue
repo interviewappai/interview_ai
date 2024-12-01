@@ -6,7 +6,7 @@ const plans = [
     credits: '100',
     features: [
       '100 FREE credits upon signup',
-      '1 credit = 1 Question',
+      '10 credit = 1 Question',
       'Basic resume analysis',
       'Standard question bank'
     ]

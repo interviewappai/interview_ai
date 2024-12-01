@@ -7,7 +7,7 @@
     <div class="gradient absolute z-10 w-full h-full  opacity-30 top-0 left-5"></div>
     <div class="container-width relative z-10 text-center px-4 max-w-7xl px-4">
       <h1 class="text-5xl md:text-7xl font-bold mb-6 gradient-text">
-        Ace Your Next Interview with Zreo
+        Ace Your Next Interview with MockPros
       </h1>
       <p class="text-xl md:text-2xl text-gray-400 mb-8 max-w-3xl mx-auto">
         Where AI-Powered Practice Meets Real Success

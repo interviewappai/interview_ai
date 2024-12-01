@@ -87,13 +87,17 @@ class SubmitAnswer(APIView):
         conversation_history = request.session['conversation_history']
 
         parsed_audio = convert_speech_to_text(request.FILES['answer'])
+        if parsed_audio == 400:
+            return Response({"error": "Speech not recognized"}, status=status.HTTP_400_BAD_REQUEST)
+        if parsed_audio == 500:
+            return Response({"error": "Service error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         # # Add the answer to the conversation history
         conversation_history.append({"role": "user", "content": parsed_audio})
         
         response = get_completion(conversation_history)
         # response="Great Answer"
-        # audio_response = convert_text_to_speech(str(response))
+        audio_response = convert_text_to_speech(str(response))
 
         # Convert generator to bytes if needed
         if hasattr(audio_response, '__iter__') and not isinstance(audio_response, bytes):

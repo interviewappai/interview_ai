@@ -8,8 +8,8 @@
           <div>
             <h3 class="text-2xl font-semibold mb-6">Contact Information</h3>
             <div class="space-y-4 text-gray-300">
-              <p>Email: support@zreo.ai</p>
-              <p>Phone: 1-800-ZREO-INT</p>
+              <p>Email: support@mockpros.in</p>
+              <p>Phone: 123789900</p>
               <p>Chat: Available 24/7</p>
             </div>
             <div class="mt-8">

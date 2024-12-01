@@ -1,13 +1,13 @@
 <script setup lang="ts">
 const testimonials = [
   {
-    quote: "Zreo helped me land my dream job at a top tech company. The AI interviews felt so real, and the feedback was invaluable.",
+    quote: "MockPros helped me land my dream job at a top tech company. The AI interviews felt so real, and the feedback was invaluable.",
     name: "Sarah K.",
     position: "Software Engineer",
     image: "/avatars/sarah.jpg"
   },
   {
-    quote: "After 20 practice sessions with Zreo, my confidence skyrocketed. Nailed my interview at my target company!",
+    quote: "After 20 practice sessions with MockPros, my confidence skyrocketed. Nailed my interview at my target company!",
     name: "James M.",
     position: "Marketing Manager",
     image: "/avatars/james.jpg"
